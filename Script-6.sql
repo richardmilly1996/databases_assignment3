@@ -51,8 +51,6 @@ begin
 end;
 $$ language plpgsql;
 
-select calculate_order_total(1)
-
 '''Task 2'''
 
 create or replace procedure create_order(p_customer_id int)
@@ -66,9 +64,6 @@ begin
     values (p_customer_id, current_timestamp, 0.00);
 end;
 $$ language plpgsql;
-
-call create_order(2)
-call create_order(5)
 
 '''Task 3'''
 
@@ -108,8 +103,6 @@ begin
 end;
 $$ language plpgsql;
 
-call add_product_to_order(1, 3, 5)
-
 '''Task 4'''
 
 create or replace function tg_update_order_total()
@@ -139,13 +132,6 @@ after insert or update or delete on order_items
 for each row
 execute function tg_update_order_total();
 
-update order_items 
-set quantity = 5 
-where order_id = 1 and product_id = 2;
-
-delete from order_items 
-where order_id = 1 and product_id = 2;
-
 '''Task 5'''
 
 create or replace function tg_record_new_order()
@@ -161,4 +147,32 @@ create trigger trg_record_new_order
 after insert on orders
 for each row
 execute function tg_record_new_order();
+
+'''Task 6'''
+
+insert into customers (full_name, email, balance) 
+values ('Ivan Franko', 'ivan.franko@email.com', 500.00);
+
+insert into products (product_name, price, stock_quantity) 
+values ('IPhone', 800.00, 5);
+
+
+select calculate_order_total(1)
+
+call create_order(2)
+call create_order(5)
+
+
+call add_product_to_order(1, 3, 5)
+
+update order_items 
+set quantity = 5 
+where order_id = 1 and product_id = 2;
+
+delete from order_items 
+where order_id = 1 and product_id = 2;
+
+select * from orders;
+select * from order_log;
+
 
